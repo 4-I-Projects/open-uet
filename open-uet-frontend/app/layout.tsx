@@ -1,17 +1,12 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import Navbar from "../components/Navbar"; // <-- Import Navbar
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Open-UET Marketplace",
@@ -25,13 +20,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      {/* THÊM DÒNG suppressHydrationWarning={true} VÀO ĐÂY */}
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        suppressHydrationWarning={true}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning={true}>
         <Providers>
-          {children}
+          <Navbar /> {/* <-- Đặt Navbar ở đây */}
+          <main className="min-h-screen bg-gray-50">
+            {children}
+          </main>
         </Providers>
       </body>
     </html>

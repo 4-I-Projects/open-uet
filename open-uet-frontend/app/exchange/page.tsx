@@ -37,10 +37,35 @@ export default function ExchangePage() {
     // --- MÔ PHỎNG GỬI API ---
     // Ở đây bạn sẽ dùng fetch() để gửi formData tới Backend của bạn
     // Backend sẽ lưu ảnh, thông tin và chờ Admin duyệt thủ công.
-    console.log("Đang gửi dữ liệu:", {
-      wallet: account.address,
-      ...formData
-    });
+    try {
+      // 1. Tạo FormData để gửi file và text
+      const data = new FormData();
+      data.append("studentId", formData.studentId);
+      data.append("certificateId", formData.certificateId);
+      data.append("walletAddress", account.address); // Ví lấy từ hook useCurrentAccount
+      data.append("file", formData.file);
+
+      // 2. Gọi API Flask
+      const response = await fetch("http://localhost:5000/api/submit", {
+        method: "POST",
+        body: data,
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Gửi thành công! Mã đơn: " + result.id);
+        setFormData({ studentId: "", certificateId: "", file: null });
+      } else {
+        alert("Lỗi: " + result.error);
+      }
+
+    } catch (error) {
+      console.error("Lỗi kết nối:", error);
+      alert("Không thể kết nối tới server backend!");
+    } finally {
+      setLoading(false);
+    }
 
     setTimeout(() => {
       alert("Gửi yêu cầu thành công! Admin sẽ duyệt và gửi token cho bạn sớm.");

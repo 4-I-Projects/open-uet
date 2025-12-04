@@ -1,0 +1,26 @@
+# 1. Môi trường ảo Python (Rất quan trọng, không bao giờ commit cái này)
+venv/
+env/
+.venv/
+
+# 2. File cấu hình nhạy cảm (Chứa mật khẩu, key bí mật)
+.env
+
+# 3. Python Cache (File rác sinh ra khi chạy code)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 4. Cơ sở dữ liệu SQLite (Thường không commit DB local)
+*.db
+database.db
+
+# 5. Thư mục chứa ảnh sinh viên upload
+# (Chỉ giữ lại thư mục rỗng, không commit ảnh bên trong)
+uploads/*
+!uploads/.gitkeep
+
+# 6. File hệ thống & IDE
+.DS_Store
+.vscode/
+.idea/

@@ -22,7 +22,7 @@ fun init(witness: UET_COIN, ctx: &mut TxContext) {
     transfer::public_transfer(metadata_cap, ctx.sender());
 }
 
-public fun mint_and_transfer(
+public entry fun mint_and_transfer(
     treasury_cap: &mut TreasuryCap<UET_COIN>,
     amount: u64,
     recipient: address,
@@ -31,10 +31,10 @@ public fun mint_and_transfer(
     coin::mint_and_transfer(treasury_cap, amount, recipient, ctx);
 }
 
-public fun burn(treasury_cap: &mut TreasuryCap<UET_COIN>, coin: coin::Coin<UET_COIN>) {
+public entry fun burn(treasury_cap: &mut TreasuryCap<UET_COIN>, coin: coin::Coin<UET_COIN>) {
     coin::burn(treasury_cap, coin);
 }
 
-public fun balance(coin: &coin::Coin<UET_COIN>): u64 {
+public entry fun balance(coin: &coin::Coin<UET_COIN>): u64 {
     coin::value(coin)
 }

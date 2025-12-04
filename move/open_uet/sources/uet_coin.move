@@ -22,14 +22,6 @@ fun init(witness: UET_COIN, ctx: &mut TxContext) {
     transfer::public_transfer(metadata_cap, ctx.sender());
 }
 
-public fun mint(
-    treasury_cap: &mut TreasuryCap<UET_COIN>,
-    amount: u64,
-    ctx: &mut TxContext,
-): coin::Coin<UET_COIN> {
-    coin::mint(treasury_cap, amount, ctx)
-}
-
 public fun mint_and_transfer(
     treasury_cap: &mut TreasuryCap<UET_COIN>,
     amount: u64,

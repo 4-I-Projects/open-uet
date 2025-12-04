@@ -33,6 +33,9 @@ export default function Navbar() {
         <Link href="/inventory" className="hover:text-blue-600 transition">
           Túi đồ
         </Link>
+        <Link href="/exchange" className="text-blue-600 font-semibold hover:text-blue-800 transition">
+          Đổi Điểm
+        </Link>
       </div>
 
       {/* Phần bên phải: Hiển thị số dư + Nút Connect */}

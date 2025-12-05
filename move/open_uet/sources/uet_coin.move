@@ -1,40 +1,43 @@
 module open_uet::uet_coin;
-use sui::coin_registry;
-use sui::coin::TreasuryCap;
+
 use sui::coin;
+use sui::coin::Coin;
+use sui::coin_registry::{Self, CoinRegistry};
+use sui::coin::TreasuryCap;
 
-public struct UET_COIN has drop {}
+const TOTAL_SUPPLY: u64 = 1000000000_000000; // Tổng cung cố định của UET_COIN
 
-fun init(witness: UET_COIN, ctx: &mut TxContext) {
-    let (builder, treasury_cap) = coin_registry::new_currency_with_otw(
-        witness,
-        3,
+public struct UET_COIN has key {
+    id: UID
+}
+
+public fun new_currency(registry: &mut CoinRegistry, ctx: &mut TxContext) {
+    let (mut currency, mut treasury_cap) = coin_registry::new_currency<UET_COIN>(
+        registry,
+        6,
         b"UETC".to_string(),
         b"UET Coin".to_string(),
         b"The official coin of the UET ecosystem".to_string(),
-        b"https://upload.wikimedia.org/wikipedia/vi/b/bf/Logo_HUET.svg".to_string(),
+        b"https://ivory-glamorous-catshark-670.mypinata.cloud/ipfs/bafkreigudqzfehptkrx35p5kx65yru6vmprwwnmqdycucr4f64iwjrpq3q".to_string(),
         ctx
     );
 
-    let metadata_cap = coin_registry::finalize(builder, ctx);
+    let total_supply = treasury_cap.mint(TOTAL_SUPPLY, ctx);
+    currency.make_supply_burn_only(treasury_cap);
 
-    transfer::public_transfer(treasury_cap, ctx.sender());
+    let metadata_cap = currency.finalize(ctx);
     transfer::public_transfer(metadata_cap, ctx.sender());
+
+    transfer::public_transfer(total_supply, ctx.sender());
 }
 
-public entry fun mint_and_transfer(
+public entry fun burn(
     treasury_cap: &mut TreasuryCap<UET_COIN>,
-    amount: u64,
-    recipient: address,
-    ctx: &mut TxContext,
+    coin: Coin<UET_COIN>
 ) {
-    coin::mint_and_transfer(treasury_cap, amount, recipient, ctx);
-}
-
-public entry fun burn(treasury_cap: &mut TreasuryCap<UET_COIN>, coin: coin::Coin<UET_COIN>) {
     coin::burn(treasury_cap, coin);
 }
 
-public entry fun balance(coin: &coin::Coin<UET_COIN>): u64 {
+public fun balance(coin: &Coin<UET_COIN>): u64 {
     coin::value(coin)
 }

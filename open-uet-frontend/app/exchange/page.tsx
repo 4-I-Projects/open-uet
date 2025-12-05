@@ -79,7 +79,7 @@ export default function ExchangePage() {
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-8">
         <h2 className="text-2xl font-bold text-center text-blue-600 mb-6">
-          Đổi Chứng Nhận Lấy Điểm
+          Đổi Chứng Chỉ Nhận Coin
         </h2>
         
         <form onSubmit={handleSubmit} className="space-y-6">

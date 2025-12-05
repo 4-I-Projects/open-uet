@@ -4,8 +4,7 @@
 import Link from "next/link";
 import { ConnectButton, useCurrentAccount, useSuiClientQuery } from "@mysten/dapp-kit";
 
-// ⚠️ THAY THẾ CHUỖI NÀY BẰNG COIN TYPE THỰC TẾ CỦA BẠN SAU KHI DEPLOY
-const UET_COIN_TYPE = "0x_YOUR_PACKAGE_ID_HERE::uet_coin::UET_COIN"; 
+const UET_COIN_TYPE = "0xd61730a619ae1df75f351ef509607efb039ac870ac7fd1b289cdbd7a07a742a5::uet_coin::UET_COIN";
 
 export default function Navbar() {
   const account = useCurrentAccount();
@@ -52,7 +51,7 @@ export default function Navbar() {
             {/* Hiển thị UET Coin */}
             {uetBalance && (
               <div className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg border border-blue-200">
-                {formatBalance(uetBalance.totalBalance, 3)} UET
+                {formatBalance(uetBalance.totalBalance, 3)} UETC
               </div>
             )}
             

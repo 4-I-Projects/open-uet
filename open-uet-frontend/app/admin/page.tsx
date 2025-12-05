@@ -10,7 +10,7 @@ import { Transaction } from "@mysten/sui/transactions"; // <-- 2. Import từ @m
 import { useRouter } from "next/navigation";
 
 // ⚠️ Đảm bảo chuỗi này khớp với Navbar và Contract của bạn
-const UET_COIN_TYPE = "0x_YOUR_PACKAGE_ID_HERE::uet_coin::UET_COIN";
+const UET_COIN_TYPE = "0xd61730a619ae1df75f351ef509607efb039ac870ac7fd1b289cdbd7a07a742a5::uet_coin::UET_COIN";
 const UET_DECIMALS = 6; 
 
 type ExchangeRequest = {

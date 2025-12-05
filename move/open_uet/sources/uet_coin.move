@@ -11,6 +11,7 @@ public struct UET_COIN has key {
     id: UID
 }
 
+/// CoinRegistry luôn có địa chỉ 0xc;
 public fun new_currency(registry: &mut CoinRegistry, ctx: &mut TxContext) {
     let (mut currency, mut treasury_cap) = coin_registry::new_currency<UET_COIN>(
         registry,

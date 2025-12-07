@@ -1,3 +1,4 @@
+#[allow(upgrade)]
 module open_uet::uet_coin;
 
 use sui::coin;
@@ -5,7 +6,7 @@ use sui::coin::Coin;
 use sui::coin_registry::{Self, CoinRegistry};
 use sui::coin::TreasuryCap;
 
-const TOTAL_SUPPLY: u64 = 1000000000_000000; // Tổng cung cố định của UET_COIN
+const TOTAL_SUPPLY: u64 = 1000000000; // Tổng cung cố định của UET_COIN
 
 public struct UET_COIN has key {
     id: UID
@@ -15,7 +16,7 @@ public struct UET_COIN has key {
 public fun new_currency(registry: &mut CoinRegistry, ctx: &mut TxContext) {
     let (mut currency, mut treasury_cap) = coin_registry::new_currency<UET_COIN>(
         registry,
-        6,
+        0,
         b"UETC".to_string(),
         b"UET Coin".to_string(),
         b"The official coin of the UET ecosystem".to_string(),

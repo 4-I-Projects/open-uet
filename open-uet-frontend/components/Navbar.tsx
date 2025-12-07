@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { ConnectButton, useCurrentAccount, useSuiClientQuery } from "@mysten/dapp-kit";
 
-const UET_COIN_TYPE = "0xd61730a619ae1df75f351ef509607efb039ac870ac7fd1b289cdbd7a07a742a5::uet_coin::UET_COIN";
+const UET_COIN_TYPE = "0xfd4f8d31fccbc6941e24621eed63de499b3e04756650ee2807ea9aaddf9e4b53::uet_coin::UET_COIN";
 
 export default function Navbar() {
   const account = useCurrentAccount();
@@ -39,7 +39,7 @@ export default function Navbar() {
       </Link>
 
       <div className="hidden md:flex gap-8 font-medium text-gray-600">
-        <Link href="/services" className="hover:text-blue-600 transition">Dịch vụ</Link>
+        {/* <Link href="/services" className="hover:text-blue-600 transition">Dịch vụ</Link> */}
         <Link href="/shop" className="hover:text-blue-600 transition">Shop</Link>
         <Link href="/marketplace" className="hover:text-blue-600 transition">Chợ P2P</Link>
         <Link href="/inventory" className="hover:text-blue-600 transition">Túi đồ</Link>

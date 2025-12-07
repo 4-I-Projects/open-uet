@@ -1,10 +1,9 @@
-// app/services/[shopId]/page.tsx
+// app/shop/[shopId]/page.tsx
 "use client"; 
 
-import Link from "next/link";
 import React, { useState, useEffect } from 'react';
-import { Service, Shop, MOCK_SHOPS } from '@/data/mock';
-import ServiceCard from '@/components/ServiceCard'; // Use the existing ServiceCard component
+import { Service, Shop } from '@/data/mock';
+import ServiceCard from '@/components/ServiceCard'; 
 
 import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
@@ -12,31 +11,40 @@ import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-ki
 
 const client = new SuiClient({ url: 'https://fullnode.testnet.sui.io:443' });
 
-const fetchShopDetails = async (shopId: string): Promise<Shop | undefined> => {
-  const servicesData = await client.getObject({
+const fetchShopDetails = async (shopId: string): Promise<Shop | null> => {
+  const data = await client.getObject({
     id: shopId,
-    options: { showContent: true, showType: true, showOwner: true }
+    options: { showContent: true }
   });
-  return servicesData?.data?.content?.fields;
+  // @ts-ignore
+  const fields = data?.data?.content?.fields;
+  if (!fields) return null;
+  return { ...fields, id: { id: shopId } } as Shop;
 };
 
 const fetchServicesForShop = async (shopId: string): Promise<Service[]> => {
-  const servicesData = await client.getObject({
+  const shopData = await client.getObject({
     id: shopId,
-    options: { showContent: true, showType: true, showOwner: true }
+    options: { showContent: true }
   });
 
-  const serviceIds: string[] = servicesData?.data?.content?.fields.services;
+  // @ts-ignore
+  const serviceIds: string[] = shopData?.data?.content?.fields?.services || [];
+  const services: Service[] = [];
 
-  const services = [];
-  console.log(serviceIds);
-  for (let i = 0; i < serviceIds.length; i++) {
-    const serviceData = await client.getObject({
-      id: serviceIds[i],
-      options: { showContent: true, showType: true, showOwner: true }
-    })
-    console.log(serviceData?.data?.content?.fields);
-    services.push(serviceData?.data?.content?.fields);
+  for (const id of serviceIds) {
+    const sData = await client.getObject({
+      id,
+      options: { showContent: true }
+    });
+    // @ts-ignore
+    const fields = sData?.data?.content?.fields;
+    if (fields) {
+        services.push({
+            ...fields,
+            id: { id: id } // Map đúng cấu trúc { id: { id: string } }
+        } as Service);
+    }
   }
   return services;
 };
@@ -44,12 +52,14 @@ const fetchServicesForShop = async (shopId: string): Promise<Service[]> => {
 const PACKAGE_ID = "0xfd4f8d31fccbc6941e24621eed63de499b3e04756650ee2807ea9aaddf9e4b53";
 const MODULE_NAME = "vouchers";
 const BUY_FUNCTION_NAME = "buy_voucher";
+const COIN_DECIMALS = 6;
 
-// --- The main Service Page Component for a specific shop ---
-export default function ShopServicePage({ params }: { params: { shopId: string } }) {
-  const { shopId } = React.use(params);
+// --- QUAN TRỌNG: Định nghĩa params là Promise cho Next.js 15 ---
+export default function ShopServicePage({ params }: { params: Promise<{ shopId: string }> }) {
+  // Unwrap params bằng React.use()
+  const resolvedParams = React.use(params);
+  const shopId = resolvedParams.shopId;
 
-  // State for the shop's details, the services it offers, and loading status
   const [shop, setShop] = useState<Shop | null>(null);
   const [services, setServices] = useState<Service[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -58,28 +68,19 @@ export default function ShopServicePage({ params }: { params: { shopId: string }
   const currentAccount = useCurrentAccount();
   const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction();
 
-
-  // useEffect to fetch all necessary data when the shopId changes
   useEffect(() => {
-    // console.log("shop id is: ", params)
     if (shopId) {
       setIsLoading(true);
       Promise.all([
-        fetchShopDetails(shopId as string),
-        fetchServicesForShop(shopId as string)
+        fetchShopDetails(shopId),
+        fetchServicesForShop(shopId)
       ])
       .then(([shopData, servicesData]) => {
-        if (shopData) {
-          setShop(shopData);
-        }
+        setShop(shopData);
         setServices(servicesData);
       })
-      .catch(error => {
-        console.error("Failed to fetch shop data:", error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
     }
   }, [shopId]);
 
@@ -88,48 +89,64 @@ export default function ShopServicePage({ params }: { params: { shopId: string }
       owner: address,
       coinType: `${PACKAGE_ID}::uet_coin::UET_COIN`, 
     });
-    return coins.data; // Array of coin objects
+    return coins.data; 
   }
 
   const handleBuy = async (service: Service) => {
+    // Sửa lỗi truy cập id: service.id.id
     console.log(`Initiating purchase for ${service.name}...`);
-    console.log(service)
     setProcessingId(service.id.id);
     const tx = new Transaction();
 
-    if (!currentAccount) return;
+    if (!currentAccount) {
+        alert("Vui lòng kết nối ví");
+        setProcessingId(null);
+        return;
+    }
 
-    const coins = await getUserUETCoins(currentAccount.address);
-    const coin = coins[0];
-    
-    const [requiredAmountCoinObject] = tx.splitCoins(
-      coin.coinObjectId, 
-      [tx.pure('u64', service.price)]
-    );
-    console.log(requiredAmountCoinObject)
+    try {
+        const coins = await getUserUETCoins(currentAccount.address);
+        if (coins.length === 0) throw new Error("Không có UET Coin");
+        
+        const coin = coins[0];
+        
+        // Tính toán amount với decimals
+        const amount = BigInt(service.price * Math.pow(10, COIN_DECIMALS));
 
-    tx.moveCall({
-      target: `${PACKAGE_ID}::${MODULE_NAME}::${BUY_FUNCTION_NAME}`,
-      arguments: [
-        tx.object(service.id.id),
-        tx.object(requiredAmountCoinObject)
-      ],
-    });
+        const [paymentCoin] = tx.splitCoins(
+          tx.object(coin.coinObjectId), 
+          [tx.pure.u64(amount)]
+        );
 
-    signAndExecuteTransaction({
-      transaction: tx,
-    });
+        tx.moveCall({
+          target: `${PACKAGE_ID}::${MODULE_NAME}::${BUY_FUNCTION_NAME}`,
+          arguments: [
+            tx.object(service.id.id), // Truy cập đúng id
+            paymentCoin
+          ],
+        });
 
-    setProcessingId(null);
+        signAndExecuteTransaction({
+          transaction: tx,
+        }, {
+            onSuccess: () => {
+                alert("Mua thành công!");
+                setProcessingId(null);
+            },
+            onError: (err) => {
+                console.error(err);
+                alert("Giao dịch thất bại");
+                setProcessingId(null);
+            }
+        });
+    } catch (e) {
+        console.error(e);
+        setProcessingId(null);
+    }
   };
 
-  if (isLoading) {
-    return <p className="text-center p-8">Loading services for this shop...</p>;
-  }
-
-  if (!shop) {
-    return <p className="text-center p-8 text-red-500">Error: Shop not found.</p>;
-  }
+  if (isLoading) return <p className="text-center p-8">Loading...</p>;
+  if (!shop) return <p className="text-center p-8 text-red-500">Shop not found.</p>;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -142,14 +159,14 @@ export default function ShopServicePage({ params }: { params: { shopId: string }
         {services.length > 0 ? (
           services.map((service) => (
             <ServiceCard 
-              key={service.id} 
+              key={service.id.id} // Sửa key
               item={service} 
               onBuy={handleBuy}
-              isProcessing={processingId === service.id}
+              isProcessing={processingId === service.id.id} // Sửa so sánh
             />
           ))
         ) : (
-          <p className="col-span-full text-center text-gray-500">This shop has no services available yet.</p>
+          <p className="col-span-full text-center text-gray-500">No services available.</p>
         )}
       </div>
     </div>

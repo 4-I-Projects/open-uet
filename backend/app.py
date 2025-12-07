@@ -153,5 +153,15 @@ def verify_voucher():
     db.session.commit()
     return jsonify({'valid': True, 'message': 'Hợp lệ!', 'service': voucher.service_name})
 
+@app.route('/api/user/vouchers', methods=['GET'])
+def get_user_vouchers():
+    wallet = request.args.get('wallet') # Lấy địa chỉ ví từ tham số URL
+    if not wallet:
+        return jsonify([])
+    
+    # Tìm voucher của ví này, sắp xếp cái mới nhất lên đầu
+    vouchers = Voucher.query.filter_by(owner_wallet=wallet).order_by(Voucher.created_at.desc()).all()
+    return jsonify([v.to_dict() for v in vouchers])
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

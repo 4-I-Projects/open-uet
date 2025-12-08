@@ -107,7 +107,7 @@ export default function VendorPage() {
         tx.object(shopId),          
         tx.object(selectedShopCap), 
         tx.pure.string(safeServiceName),
-        tx.pure.u64(Number(servicePrice) * 1000000) // Giả sử decimal = 6
+        tx.pure.u64(Number(servicePrice))
       ]
     });
 

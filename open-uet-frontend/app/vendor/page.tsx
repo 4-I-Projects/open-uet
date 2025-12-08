@@ -38,7 +38,7 @@ export default function VendorPage() {
       filter: { StructType: `${PACKAGE_ID}::vouchers::ShopCap` },
       options: { showContent: true }
     },
-    { enabled: !!account && PACKAGE_ID !== "0x73fdfa00d7c18340767100d75980cb3a501ee21efda0921412f463ec103091ea" }
+    { enabled: !!account}
   );
 
   // --- 1. HÀM TẠO SHOP ---

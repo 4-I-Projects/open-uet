@@ -22,19 +22,20 @@ async function fetchShops(): Promise<Shop[]> {
   for (let i = 0; i < shopIds.length; i++) {
     const shopData = await client.getObject({
       id: shopIds[i],
-      options: { showContent: true, showOwner: true } // Quan trọng: showOwner: true
+      options: { showContent: true } // Quan trọng: showOwner: true
     });
+    console.log(shopData)
     
     // @ts-ignore
     const fields = shopData?.data?.content?.fields;
-    const ownerData = shopData?.data?.owner;
+    const ownerAddress = shopData?.data?.content.fields.owner;
     
     // Xử lý lấy địa chỉ Owner (vì Sui trả về dạng object phức tạp)
-    let ownerAddress = "Unknown";
-    if (ownerData && typeof ownerData === 'object') {
-        if ('AddressOwner' in ownerData) ownerAddress = (ownerData as any).AddressOwner;
-        if ('Shared' in ownerData) ownerAddress = "Shared Object";
-    }
+    // let ownerAddress = "Unknown";
+    // if (ownerData && typeof ownerData === 'object') {
+    //     if ('AddressOwner' in ownerData) ownerAddress = (ownerData as any).AddressOwner;
+    //     if ('Shared' in ownerData) ownerAddress = "Shared Object";
+    // }
 
     if (fields) {
         shops.push({

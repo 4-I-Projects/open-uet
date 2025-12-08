@@ -1,16 +1,95 @@
-// app/inventory/page.tsx
 "use client";
+import { Transaction } from '@mysten/sui/transactions';
+import { useCurrentAccount, useSuiClientQuery, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import { Voucher } from '@/data/mock';
+import { SuiClient } from '@mysten/sui/client';
 
-import { useCurrentAccount, useSuiClientQuery } from "@mysten/dapp-kit";
+import { useState } from 'react';
 
-// ID Package của bạn
 const PACKAGE_ID = process.env.NEXT_PUBLIC_PACKAGE_ID as string;
 
-// Struct type đầy đủ của Voucher
 const VOUCHER_TYPE = `${PACKAGE_ID}::vouchers::Voucher`;
+const SHOP_CAP_TYPE = `${PACKAGE_ID}::vouchers::ShopCap`;
 
+const client = new SuiClient({ url: 'https://fullnode.testnet.sui.io:443' });
 export default function InventoryPage() {
   const account = useCurrentAccount();
+  const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction();
+
+  const [processingId, setProcessingId] = useState<string | null>(null);
+
+  const { data: shopCapObjects, isLoading: isLoadingShop } = useSuiClientQuery(
+    "getOwnedObjects",
+    {
+      owner: account?.address as string,
+      filter: { StructType: SHOP_CAP_TYPE },
+      options: {
+        showContent: true
+      }
+    },
+    { enabled: !!account }
+  );
+
+  const checkVoucher = async (voucher) => {
+    console.log(shopCapObjects)
+    console.log(voucher)
+    const content = voucher.data?.content as any;
+    const fields = content?.fields; 
+
+    // Voucher struct có: id, value, service_id
+    const value = fields?.value;
+    const serviceId = fields?.service_id;
+    const objectId = voucher.data?.objectId;
+    setProcessingId(objectId);
+
+    const shop = await client.getObject({
+        id: serviceId,
+        options: { showContent: true, showType: true }
+    });
+    console.log('shop is ', shop);
+
+    let shopCap;
+    if (!shopCapObjects) return 
+    for (let i = 0; i < shopCapObjects?.data.length; i++) {
+        if (shopCapObjects.data[i].data?.content?.fields?.shop_id == shop?.data?.content.fields.shop_id) { 
+            shopCap = shopCapObjects.data[i];
+        }
+    }
+    console.log('shop cap is ', shopCap)
+    // console.log(voucehr)
+
+    const tx = new Transaction();
+    try {
+        tx.moveCall({
+          target: `${PACKAGE_ID}::vouchers::check_voucher`,
+          arguments: [
+            // service
+            tx.object(serviceId),
+            // shop cap
+            tx.object(shopCap?.data?.content.fields.id.id),
+            //voucher
+            tx.object(objectId), // Truy cập đúng id
+          ],
+        });
+
+        signAndExecuteTransaction({
+          transaction: tx,
+        }, {
+            onSuccess: () => {
+                alert("Kiểm tra thành công, voucher dùng được");
+                setProcessingId(null);
+            },
+            onError: (err) => {
+                console.error(err);
+                alert("Kiểm tra thất bại");
+                setProcessingId(null);
+            }
+        });
+    } catch (e) {
+        console.error(e);
+        setProcessingId(null);
+    }
+  }
 
   // Gọi trực tiếp Blockchain để lấy các object Voucher mà ví này đang sở hữu
   const { data, isPending, error } = useSuiClientQuery(
@@ -43,7 +122,6 @@ export default function InventoryPage() {
   if (error) return <div className="p-10 text-center text-red-500">Lỗi: {error.message}</div>;
 
   const vouchers = data?.data || [];
-
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-5xl mx-auto">
@@ -113,6 +191,9 @@ export default function InventoryPage() {
                     >
                       Xem trên SuiScan ↗
                     </a>
+                  </div>
+                  <div>
+                    <button onClick={() => checkVoucher(obj)}>Check</button>
                   </div>
                 </div>
               );

@@ -7,7 +7,7 @@ import { ConnectButton, useCurrentAccount, useSuiClientQuery } from "@mysten/dap
 const PACKAGE_ID = process.env.NEXT_PUBLIC_PACKAGE_ID as string;
 const UET_COIN_TYPE = `${PACKAGE_ID}::uet_coin::UET_COIN`;
 const REWARD_SYSTEM_CAP_TYPE = `${PACKAGE_ID}::reward_system::RewardSystemCap`;
-const SHOP_CAP_TYPE = `${PACKAGE_ID}::shop::ShopCap`;
+const SHOP_CAP_TYPE = `${PACKAGE_ID}::vouchers::ShopCap`;
 
 export default function Navbar() {
   const account = useCurrentAccount();

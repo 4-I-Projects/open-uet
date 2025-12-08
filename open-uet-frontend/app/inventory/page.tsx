@@ -100,7 +100,7 @@ export default function InventoryPage() {
                     </p>
                     <p className="text-xl font-mono font-black text-blue-700">
                       {/* Chia 1 triệu để ra số UET gốc */}
-                      {value ? Number(value) / 1000000 : 0} UET
+                      {value ? Number(value) / 1 : 0} UET
                     </p>
                   </div>
 

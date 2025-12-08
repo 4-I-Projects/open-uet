@@ -24,12 +24,12 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 db = SQLAlchemy(app)
 
 # --- MODELS ---
-class ExchangeRequest(db.Model):
+class SubmissionRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.String(50), nullable=False)
     wallet_address = db.Column(db.String(100), nullable=False)
     certificate_id = db.Column(db.String(100), nullable=False)
-    image_filename = db.Column(db.String(200), nullable=False)
+    image_url = db.Column(db.String(200), nullable=False)
     status = db.Column(db.String(20), default='PENDING')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -39,7 +39,7 @@ class ExchangeRequest(db.Model):
             'student_id': self.student_id,
             'wallet_address': self.wallet_address,
             'certificate_id': self.certificate_id,
-            'image_url': self.image_filename,
+            'image_url': self.image_url,
             'status': self.status,
             'created_at': self.created_at.isoformat()
         }
@@ -92,11 +92,11 @@ def submit_request():
     if file and allowed_file(file.filename):
         ipfs_url = upload_to_pinata(file)
         if not ipfs_url: return jsonify({'error': 'Upload failed'}), 500
-        new_req = ExchangeRequest(
+        new_req = SubmissionRequest(
             student_id=request.form.get('studentId'),
             wallet_address=request.form.get('walletAddress'),
             certificate_id=request.form.get('certificateId'),
-            image_filename=ipfs_url
+            image_url=ipfs_url
         )
         db.session.add(new_req)
         db.session.commit()
@@ -105,13 +105,13 @@ def submit_request():
 
 @app.route('/api/admin/requests', methods=['GET'])
 def get_requests():
-    reqs = ExchangeRequest.query.filter_by(status='PENDING').all()
+    reqs = SubmissionRequest.query.filter_by(status='PENDING').all()
     return jsonify([r.to_dict() for r in reqs])
 
 @app.route('/api/admin/update-status', methods=['POST'])
 def update_status():
     data = request.json
-    req = ExchangeRequest.query.get(data.get('id'))
+    req = SubmissionRequest.query.get(data.get('id'))
     if req:
         req.status = data.get('status')
         db.session.commit()

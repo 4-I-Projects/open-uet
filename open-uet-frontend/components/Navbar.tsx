@@ -106,7 +106,12 @@ export default function Navbar() {
               <Link href="/shop/dashboard" className="px-4 py-2 bg-green-50 text-green-700 rounded-lg border border-green-200 hover:bg-green-100 transition">
                 🛒 Shop
               </Link>
-            ) : "hi"}
+            ) : (
+              <div className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg border border-gray-200">
+                👤 User
+              </div>
+            ) 
+            }
             
           </div>
         )}

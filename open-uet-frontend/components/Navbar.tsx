@@ -69,6 +69,8 @@ export default function Navbar() {
       <div className="hidden md:flex gap-8 font-medium text-gray-600">
         {/* <Link href="/services" className="hover:text-blue-600 transition">Dịch vụ</Link> */}
         <Link href="/shop" className="hover:text-blue-600 transition">Shop</Link>
+        <Link href="/vendor" className="hover:text-blue-600 transition">Vendor</Link>
+
         <Link href="/marketplace" className="hover:text-blue-600 transition">Chợ P2P</Link>
         <Link href="/inventory" className="hover:text-blue-600 transition">Túi đồ</Link>
         <Link href="/exchange" className="text-blue-600 font-semibold hover:text-blue-800 transition">Đổi Điểm</Link>

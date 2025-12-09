@@ -66,7 +66,7 @@ export default function AdminPage() {
     }
     
     // Lưu ý: SUI SDK mới yêu cầu BigInt rõ ràng
-    const amountToSend = BigInt(Number(amountStr) * Math.pow(10, UET_DECIMALS));
+    const amountToSend = BigInt(Number(amountStr));
 
     try {
       const { data: coins } = await client.getCoins({

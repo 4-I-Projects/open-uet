@@ -3,11 +3,11 @@ module open_uet::vouchers;
 use open_uet::uet_coin::UET_COIN;
 use sui::coin::Coin;
 use std::ascii::String;
-use sui::table;
 use sui::event;
+use sui::coin;
 
 // use sui::dynamic_object_field as dof;
-public struct VOUCHERS has drop;
+public struct VOUCHERS has drop {}
 
 public struct VoucherMinted has copy, drop {
     object_id: ID,
@@ -51,10 +51,11 @@ public struct Service has key, store {
     name: String,
     price: u64,
     shop_id: ID,
-    payments: table::Table<address, Coin<UET_COIN>>,
+    // payments: table::Table<address, Coin<UET_COIN>>,
+    payments: Coin<UET_COIN>,
 }
 
-fun init(otw: VOUCHERS, ctx: &mut TxContext) {
+fun init(_: VOUCHERS, ctx: &mut TxContext) {
     // let publisher = package::claim(owt, ctx);
 
     transfer::transfer(AdminCap{
@@ -70,11 +71,8 @@ fun init(otw: VOUCHERS, ctx: &mut TxContext) {
 }
 
 fun buy(
-    // shop_registry: &mut ShopRegistry,
-    // shop: &mut Shop,
     service: &mut Service,
     coin: Coin<UET_COIN>,
-    // item_id: ID,
     ctx: &mut TxContext,
 ): Voucher {
     assert!(coin.value() >= service.price, 0);
@@ -89,18 +87,12 @@ fun buy(
 
     event::emit(VoucherMinted {
         object_id: object::id(&voucher),
-        owner: ctx.sender(),
+        owner: sender,
         name: service.name,
         service_id: service.id.to_inner(),
     });
 
-    // transfer::public_transfer(voucher, sender);
-
-    if (service.payments.contains(sender)) {
-        service.payments.borrow_mut(sender).join(coin);
-    } else {
-        service.payments.add(sender, coin);
-    };
+    service.payments.join(coin);
 
    voucher 
 }
@@ -172,7 +164,7 @@ public fun register_service(
         name: name,
         price: price,
         shop_id: shop.id.to_inner(),
-        payments: table::new(ctx),
+        payments: coin::zero(ctx),
     };
 
     let service_id = service.id.to_inner();
@@ -192,4 +184,21 @@ public fun check_voucher(
     assert!(service.id.to_inner() == voucher.service_id, 0);
     let Voucher { id, .. } = voucher;
     object::delete(id);
+}
+
+fun take_profit(
+    service: &mut Service,
+    amount: u64,
+    ctx: &mut TxContext,
+): Coin<UET_COIN> {
+    service.payments.split(amount, ctx)
+}
+
+public fun take_profit_and_keep(
+    service: &mut Service,
+    amount: u64,
+    ctx: &mut TxContext,
+) {
+    let splittedAmount: Coin<UET_COIN> = take_profit(service, amount, ctx);
+    coin::send_funds(splittedAmount, ctx.sender());
 }

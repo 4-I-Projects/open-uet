@@ -49,10 +49,10 @@ const fetchServicesForShop = async (shopId: string): Promise<Service[]> => {
   return services;
 };
 
-const PACKAGE_ID = "0xfd4f8d31fccbc6941e24621eed63de499b3e04756650ee2807ea9aaddf9e4b53";
+const PACKAGE_ID = process.env.NEXT_PUBLIC_PACKAGE_ID as string;
 const MODULE_NAME = "vouchers";
 const BUY_FUNCTION_NAME = "buy_voucher";
-const COIN_DECIMALS = 6;
+const COIN_DECIMALS = 0;
 
 // --- QUAN TRỌNG: Định nghĩa params là Promise cho Next.js 15 ---
 export default function ShopServicePage({ params }: { params: Promise<{ shopId: string }> }) {

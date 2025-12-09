@@ -66,7 +66,7 @@ export default function AdminPage() {
     }
     
     // Lưu ý: SUI SDK mới yêu cầu BigInt rõ ràng
-    const amountToSend = BigInt(Number(amountStr) * Math.pow(10, UET_DECIMALS));
+    const amountToSend = BigInt(Number(amountStr));
 
     try {
       const { data: coins } = await client.getCoins({
@@ -179,7 +179,7 @@ export default function AdminPage() {
                   <div className="bg-gray-50 p-2 rounded text-xs font-mono text-gray-600 truncate">Ví: {req.wallet_address}</div>
 
                   <div className="mt-auto pt-4 border-t border-gray-100">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Số điểm thưởng (UET)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Số điểm thưởng (UETC)</label>
                     <div className="flex gap-2">
                       <input 
                         type="number" 

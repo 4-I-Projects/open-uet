@@ -25,7 +25,7 @@ export default function ServiceCard({ item, onBuy, isProcessing }: ServiceCardPr
         )}
         
         <div className="mt-5 flex items-center justify-between">
-          <span className="text-2xl text-blue-600 font-bold">{item.price} UET</span>
+          <span className="text-2xl text-blue-600 font-bold">{item.price} UETC</span>
           <button
             onClick={() => onBuy(item)}
             disabled={isProcessing}

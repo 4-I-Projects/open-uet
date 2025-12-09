@@ -20,7 +20,7 @@ public fun new_currency(registry: &mut CoinRegistry, ctx: &mut TxContext) {
         b"UETC".to_string(),
         b"UET Coin".to_string(),
         b"The official coin of the UET ecosystem".to_string(),
-        b"https://ivory-glamorous-catshark-670.mypinata.cloud/ipfs/bafkreigudqzfehptkrx35p5kx65yru6vmprwwnmqdycucr4f64iwjrpq3q".to_string(),
+        b"https://upload.wikimedia.org/wikipedia/vi/b/bf/Logo_HUET.svg".to_string(),
         ctx
     );
 

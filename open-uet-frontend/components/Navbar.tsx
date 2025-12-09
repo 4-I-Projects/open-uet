@@ -82,7 +82,7 @@ export default function Navbar() {
             {/* Hiển thị UET Coin */}
             {uetBalance && (
               <div className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg border border-blue-200">
-                {formatBalance(uetBalance.totalBalance, 3)} UETC
+                {formatBalance(uetBalance.totalBalance, 0)} UETC
               </div>
             )}
             

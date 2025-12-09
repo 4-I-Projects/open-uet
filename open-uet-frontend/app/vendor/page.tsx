@@ -5,8 +5,8 @@ import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClientQuery } fr
 import { Transaction } from "@mysten/sui/transactions";
 
 // ⚠️ BẮT BUỘC: Bạn phải điền ID thật vào đây (Lấy từ lần deploy trước)
-const PACKAGE_ID = "0xfd4f8d31fccbc6941e24621eed63de499b3e04756650ee2807ea9aaddf9e4b53";
-const SHOP_REGISTRY = "0x73fdfa00d7c18340767100d75980cb3a501ee21efda0921412f463ec103091ea";
+const PACKAGE_ID = process.env.NEXT_PUBLIC_PACKAGE_ID as string;
+const SHOP_REGISTRY = process.env.NEXT_PUBLIC_SHOP_REGISTRY as string;
 const MODULE_NAME = "vouchers";
 
 // Hàm tiện ích: Chuyển tiếng Việt sang không dấu (Vì contract cũ chỉ nhận ASCII)

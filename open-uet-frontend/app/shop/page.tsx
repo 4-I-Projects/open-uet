@@ -6,7 +6,7 @@ import { Shop } from '@/data/mock';
 import ShopCard from '@/components/ShopCard'; 
 import { SuiClient } from '@mysten/sui/client';
 
-const SHOP_REGISTRY_ADDRESS = "0x73fdfa00d7c18340767100d75980cb3a501ee21efda0921412f463ec103091ea"; 
+const SHOP_REGISTRY_ADDRESS = process.env.NEXT_PUBLIC_SHOP_REGISTRY as string; 
 const client = new SuiClient({ url: 'https://fullnode.testnet.sui.io:443' });
 
 async function fetchShops(): Promise<Shop[]> {

@@ -1,1 +1,4 @@
-# blockchain
+# Open-UET: A decentralized ecosystem designed to modernize student activity management
+<img width="2751" height="1533" alt="unnamed" src="https://github.com/user-attachments/assets/481acf83-ab6a-4241-8598-9d0998183706" />
+
+Open-UET, a decentralized ecosystem designed to modernize student activity management at Vietnam National University. By leveraging the Sui blockchain and the Move programming language, the system converts academic and extracurricular achievements into UET Coin (UETC). Students can earn these digital rewards by submitting verified evidence to school administrators through a transparent, on-chain process. These tokens are then redeemable for tangible benefits, such as NFT-based vouchers for canteen services, parking, and other campus utilities. The project utilizes a hybrid architecture incorporating IPFS for decentralized storage and Next.js for a user-friendly frontend interface. Ultimately, the authors aim to foster a circular economy within the university that enhances student motivation through secure, automated, and tamper-proof digital assets.
